@@ -1,0 +1,293 @@
+{
+  "contractName": "MultiEventsHistoryAdapter",
+  "abi": [],
+  "bytecode": "0x60606040523415600e57600080fd5b603580601b6000396000f3006060604052600080fd00a165627a7a72305820b2b72f9914a590968df99ea78f07b34f46189d881435ef483b7057ba72d6a5660029",
+  "deployedBytecode": "0x6060604052600080fd00a165627a7a72305820b2b72f9914a590968df99ea78f07b34f46189d881435ef483b7057ba72d6a5660029",
+  "sourceMap": "172:239:5:-;;;;;;;;;;;;;;;;;",
+  "deployedSourceMap": "172:239:5:-;;;;;",
+  "source": "/**\n * Copyright 2017–2018, LaborX PTY\n * Licensed under the AGPL Version 3 license.\n */\n\npragma solidity ^0.4.11;\n\n/**\n * @title General MultiEventsHistory user.\n *\n */\ncontract MultiEventsHistoryAdapter {\n\n    /**\n    *   @dev It is address of MultiEventsHistory caller assuming we are inside of delegate call.\n    */\n    function _self() internal view returns (address) {\n        return msg.sender;\n    }\n}\n",
+  "sourcePath": "/Users/alesanro/Documents/Projects/ChronoBank/AtomicSwap/contracts/core/event/MultiEventsHistoryAdapter.sol",
+  "ast": {
+    "absolutePath": "/Users/alesanro/Documents/Projects/ChronoBank/AtomicSwap/contracts/core/event/MultiEventsHistoryAdapter.sol",
+    "exportedSymbols": {
+      "MultiEventsHistoryAdapter": [
+        960
+      ]
+    },
+    "id": 961,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 950,
+        "literals": [
+          "solidity",
+          "^",
+          "0.4",
+          ".11"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "92:24:5"
+      },
+      {
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": "@title General MultiEventsHistory user.\n ",
+        "fullyImplemented": true,
+        "id": 960,
+        "linearizedBaseContracts": [
+          960
+        ],
+        "name": "MultiEventsHistoryAdapter",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": {
+              "id": 958,
+              "nodeType": "Block",
+              "src": "375:34:5",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "expression": {
+                      "argumentTypes": null,
+                      "id": 955,
+                      "name": "msg",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 1030,
+                      "src": "392:3:5",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_magic_message",
+                        "typeString": "msg"
+                      }
+                    },
+                    "id": 956,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "memberName": "sender",
+                    "nodeType": "MemberAccess",
+                    "referencedDeclaration": null,
+                    "src": "392:10:5",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "functionReturnParameters": 954,
+                  "id": 957,
+                  "nodeType": "Return",
+                  "src": "385:17:5"
+                }
+              ]
+            },
+            "documentation": "  @dev It is address of MultiEventsHistory caller assuming we are inside of delegate call.",
+            "id": 959,
+            "implemented": true,
+            "isConstructor": false,
+            "isDeclaredConst": true,
+            "modifiers": [],
+            "name": "_self",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 951,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "340:2:5"
+            },
+            "payable": false,
+            "returnParameters": {
+              "id": 954,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 953,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 959,
+                  "src": "366:7:5",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 952,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "366:7:5",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "365:9:5"
+            },
+            "scope": 960,
+            "src": "326:83:5",
+            "stateMutability": "view",
+            "superFunction": null,
+            "visibility": "internal"
+          }
+        ],
+        "scope": 961,
+        "src": "172:239:5"
+      }
+    ],
+    "src": "92:320:5"
+  },
+  "legacyAST": {
+    "absolutePath": "/Users/alesanro/Documents/Projects/ChronoBank/AtomicSwap/contracts/core/event/MultiEventsHistoryAdapter.sol",
+    "exportedSymbols": {
+      "MultiEventsHistoryAdapter": [
+        960
+      ]
+    },
+    "id": 961,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 950,
+        "literals": [
+          "solidity",
+          "^",
+          "0.4",
+          ".11"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "92:24:5"
+      },
+      {
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": "@title General MultiEventsHistory user.\n ",
+        "fullyImplemented": true,
+        "id": 960,
+        "linearizedBaseContracts": [
+          960
+        ],
+        "name": "MultiEventsHistoryAdapter",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": {
+              "id": 958,
+              "nodeType": "Block",
+              "src": "375:34:5",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "expression": {
+                      "argumentTypes": null,
+                      "id": 955,
+                      "name": "msg",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 1030,
+                      "src": "392:3:5",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_magic_message",
+                        "typeString": "msg"
+                      }
+                    },
+                    "id": 956,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "memberName": "sender",
+                    "nodeType": "MemberAccess",
+                    "referencedDeclaration": null,
+                    "src": "392:10:5",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "functionReturnParameters": 954,
+                  "id": 957,
+                  "nodeType": "Return",
+                  "src": "385:17:5"
+                }
+              ]
+            },
+            "documentation": "  @dev It is address of MultiEventsHistory caller assuming we are inside of delegate call.",
+            "id": 959,
+            "implemented": true,
+            "isConstructor": false,
+            "isDeclaredConst": true,
+            "modifiers": [],
+            "name": "_self",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 951,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "340:2:5"
+            },
+            "payable": false,
+            "returnParameters": {
+              "id": 954,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 953,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 959,
+                  "src": "366:7:5",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 952,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "366:7:5",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "365:9:5"
+            },
+            "scope": 960,
+            "src": "326:83:5",
+            "stateMutability": "view",
+            "superFunction": null,
+            "visibility": "internal"
+          }
+        ],
+        "scope": 961,
+        "src": "172:239:5"
+      }
+    ],
+    "src": "92:320:5"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.4.21+commit.dfe3193c.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "2.0.0",
+  "updatedAt": "2018-04-14T15:57:57.961Z"
+}
