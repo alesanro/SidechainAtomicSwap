@@ -5,7 +5,11 @@ import "../erc20/ERC20Interface.sol";
 import "../common/Object.sol";
 import "../event/MultiEventsHistoryAdapter.sol";
 
-
+/// @title Supposed to be a token holder for cross-chain operations with tokens
+/// Users usually should lock their token balance in this contract and request 
+/// a middleware on a target sidechain to provide their currency.
+/// To get users' tokens back users should request middleware to withdraw their
+/// balance and send them to AtomicSwap contract
 contract Deposits is Object, MultiEventsHistoryAdapter {
 	
 	uint constant DEPOSITS_SCOPE = 34000;
@@ -18,7 +22,15 @@ contract Deposits is Object, MultiEventsHistoryAdapter {
 	event Withdrawn(address indexed self, address indexed account, uint256 amount, address token);
 	event Error(address indexed self, uint errorCode);
 
+	mapping(address => bool) public oracles;
 	address public eventsHistory;
+
+	/// @dev Allow access only for oracle
+    modifier onlyOracle {
+        if (oracles[msg.sender]) {
+            _;
+        }
+    }
 
 	function Deposits() public {
 		eventsHistory = address(this);
@@ -29,6 +41,28 @@ contract Deposits is Object, MultiEventsHistoryAdapter {
 		return OK;
 	}
 
+	/// @notice Adds oracle to whitelist
+    /// @param _oracle an account address that will manage withdrawing operations
+    function addOracles(address _oracle) onlyContractOwner external returns (uint) {
+        require(_oracle != 0x0);
+
+		oracles[_oracle] = true;
+        return OK;
+    }
+
+    /// @notice Removes oracle from whitelist
+    /// @param _oracle an account address that will be blacklisted from withdrawing operations
+    function removeOracles(address _oracle) onlyContractOwner external returns (uint) {
+        delete oracles[_oracle];
+        return OK;
+    }
+
+	/// @notice Locks users' token balances to provide an opportunity to use sidechains.
+	/// Usually users send tokens to Deposits balance and then receive equivalent number 
+	/// of tokens in a sidechain network.
+	/// Locking amount of tokens should be at first approved by user for withdrawings.
+	/// @param _amount amount of tokens that will be locked
+	/// @param _token ERC20 token address
 	function lockToken(uint256 _amount, address _token) external returns (uint) {
 		require(_token != 0x0);
 		
@@ -44,7 +78,13 @@ contract Deposits is Object, MultiEventsHistoryAdapter {
 		return OK;
 	}
 
-	function withdrawToken(address _to, uint256 _amount, address _token) onlyContractOwner external returns (uint) {
+	/// @notice Opposite to 'lockToken' function, starts a procedure of returning tokens that were locked.
+	/// Should be performed by one of authorized oracles; then token balance will be transfered to oracle's
+	/// account and proceeded for the next actions (as transferred to AtomicSwap contract).
+	/// @param _to the final destination for tokens (a user)
+	/// @param _amount amount of tokens to withdraw
+	/// @param _token ERC20 token address
+	function withdrawToken(address _to, uint256 _amount, address _token) onlyOracle external returns (uint) {
 		require(_to != 0x0);
 		require(_amount != 0);
 		require(_token != 0x0);
