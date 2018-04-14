@@ -18,6 +18,7 @@ const errorScope = {
     tokenextension: 23000,
     poll_v2: 26000,
     vote_v2: 27000,
+    deposits: 34000,
 }
 
 const errorsLibrary = {
@@ -188,6 +189,11 @@ const errorsLibrary = {
     POLL_BACKEND_ALREADY_VOTED: errorScope.poll_v2 + 4,
 
     VOTING_ACTIVE_POLL_LIMIT_REACHED: errorScope.vote_v2 + 1,
+
+    DEPOSITS_NOT_ENOUGH_ALLOWANCE: errorScope.deposits + 1,
+    DEPOSITS_NOT_ENOUGH_BALANCE: errorScope.deposits + 2,
+    DEPOSITS_CANNOT_LOCK_TOKENS: errorScope.deposits + 3,
+    DEPOSITS_CANNOT_WITHDRAW_TOKENS: errorScope.deposits + 4,
 }
 
 module.exports = errorsLibrary
