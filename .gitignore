@@ -1,0 +1,8 @@
+.tern-port
+.DS_Store
+node_modules/
+.idea/
+
+*.log
+*.bac
+/build
