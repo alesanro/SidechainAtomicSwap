@@ -4,7 +4,7 @@ const path = require("path")
 
 module.exports = (deployer, network) => {
 	switch (network) {
-		case "kovan": {
+		case "sidechain": {
 			deployer.then(async () => {
 				await deployer.deploy(ChronoBankAsset)
 				const asset = await ChronoBankAsset.deployed()

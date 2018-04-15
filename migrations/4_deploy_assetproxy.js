@@ -4,17 +4,17 @@ const path = require("path")
 
 module.exports = (deployer, network) => {
 	switch (network) {
-		
-		case "kovan": {
+
+		case "sidechain": {
 			deployer.then(async () => {
 				const LH_SYMBOL = 'LHMOON'
 				const LH_NAME = 'LH Moon Token'
 				const LH_DESCRIPTION = 'ChronoBank LH Moon Token'
-				
+
 				const BASE_UNIT = 12
 				const IS_REISSUABLE = true
 				// const IS_NOT_REISSUABLE = false
-				
+
 				await deployer.deploy(ChronoBankAssetProxy)
 
 				const platform = await ChronoBankPlatform.deployed()

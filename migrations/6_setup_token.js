@@ -5,7 +5,7 @@ const path = require("path")
 
 module.exports = (deployer, network) => {
 	switch (network) {
-		case "kovan": {
+		case "sidechain": {
 			deployer.then(async () => {
 				const chronoBankAssetProxy = await ChronoBankAssetProxy.deployed()
 				await chronoBankAssetProxy.proposeUpgrade(ChronoBankAsset.address)
