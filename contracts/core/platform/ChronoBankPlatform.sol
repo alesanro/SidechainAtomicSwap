@@ -49,6 +49,9 @@ contract ChronoBankPlatform is Object, ChronoBankPlatformEmitter {
     uint constant CHRONOBANK_PLATFORM_SHOULD_RECOVER_TO_NEW_ADDRESS = CHRONOBANK_PLATFORM_SCOPE + 12;
     uint constant CHRONOBANK_PLATFORM_ASSET_IS_NOT_ISSUED = CHRONOBANK_PLATFORM_SCOPE + 13;
     uint constant CHRONOBANK_PLATFORM_INVALID_INVOCATION = CHRONOBANK_PLATFORM_SCOPE + 17;
+    uint constant CHRONOBANK_PLATFORM_INVALID_SWAP_STATE = CHRONOBANK_PLATFORM_SCOPE + 18;
+    uint constant CHRONOBANK_PLATFORM_SWAP_EXPIRED = CHRONOBANK_PLATFORM_SCOPE + 19;
+    uint constant CHRONOBANK_PLATFORM_INVALID_SECRET_KEY = CHRONOBANK_PLATFORM_SCOPE + 20;
 
     /// @title Structure of a particular asset.
     struct Asset {
@@ -74,6 +77,23 @@ contract ChronoBankPlatform is Object, ChronoBankPlatformEmitter {
         mapping(address => bool) trust;  // Addresses that are trusted with recovery proocedure.
     }
 
+    struct Swap {
+        uint256 timelock;
+        uint256 value;
+        address allowancer;
+        bytes32 symbol;
+        address withdrawer;
+        bytes32 secretLock;
+        bytes secretKey;
+    }
+
+    enum States {
+        INVALID,
+        OPEN,
+        CLOSED,
+        EXPIRED
+    }
+
     /// @dev Iterable mapping pattern is used for holders.
     uint public holdersCount;
     mapping(uint => Holder) public holders;
@@ -95,6 +115,9 @@ contract ChronoBankPlatform is Object, ChronoBankPlatformEmitter {
 
     /// @dev Should use interface of the emitter, but address of events history.
     address public eventsHistory;
+
+    mapping (bytes32 => Swap) private mintSwaps;
+    mapping (bytes32 => States) private mintSwapStates;
 
     /// @dev Emits Error event with specified error message.
     /// Should only be used if no state changes happened.
@@ -137,6 +160,57 @@ contract ChronoBankPlatform is Object, ChronoBankPlatformEmitter {
         if (isTrusted(_from, _to)) {
             _;
         }
+    }
+
+    modifier onlyInvalidSwaps(bytes32 _swapID) {
+        if (mintSwapStates[_swapID] != States.INVALID) {
+            assembly {
+                mstore(0, 15018) // CHRONOBANK_PLATFORM_INVALID_SWAP_STATE
+                return (0, 32)
+            }
+        }
+        _;
+    }
+
+    modifier onlyOpenSwaps(bytes32 _swapID) {
+        if (mintSwapStates[_swapID] != States.OPEN) {
+            assembly {
+                mstore(0, 15018) // CHRONOBANK_PLATFORM_INVALID_SWAP_STATE
+                return (0, 32)
+            }
+        }
+        _;
+    }
+
+    modifier onlyClosedSwaps(bytes32 _swapID) {
+        if (mintSwapStates[_swapID] != States.CLOSED) {
+            assembly {
+                mstore(0, 15018) // CHRONOBANK_PLATFORM_INVALID_SWAP_STATE
+                return (0, 32)
+            }
+        }
+        _;
+    }
+
+    modifier onlyExpirableSwaps(bytes32 _swapID) {
+        if (mintSwaps[_swapID].timelock > now) {
+            assembly {
+                mstore(0, 15019) // CHRONOBANK_PLATFORM_SWAP_EXPIRED
+                return (0, 32)
+            }
+        }
+        _;
+    }
+
+    modifier onlyWithSecretKey(bytes32 _swapID, bytes _secretKey) {
+        // TODO: Require _secretKey length to conform to the spec
+        if (mintSwaps[_swapID].secretLock == sha256(_secretKey)) {
+            assembly {
+                mstore(0, 15020) // CHRONOBANK_PLATFORM_INVALID_SECRET_KEY
+                return (0, 32)
+            }
+        }
+        _;
     }
 
     /// @notice Adds a co-owner of a contract. Might be more than one co-owner
@@ -549,6 +623,88 @@ contract ChronoBankPlatform is Object, ChronoBankPlatformEmitter {
         return OK;
     }
 
+    function allowanceMint(
+        bytes32 _swapID, 
+        uint256 _value, 
+        bytes32 _symbol, 
+        address _withdrawer, 
+        bytes32 _secretLock, 
+        uint256 _timelock
+    ) 
+    onlyInvalidSwaps(_swapID)
+    onlyOneOfOwners(_symbol)
+    external 
+    returns (uint)
+    {
+        require(mintSwapStates[_swapID] == States.INVALID);
+
+        // Store the details of the swap.
+        Swap memory swap = Swap({
+            timelock: _timelock,
+            value: _value,
+            allowancer: msg.sender,
+            symbol: _symbol,
+            withdrawer: _withdrawer,
+            secretLock: _secretLock,
+            secretKey: new bytes(0)
+        });
+        mintSwaps[_swapID] = swap;
+        mintSwapStates[_swapID] = States.OPEN;
+
+        ChronoBankPlatformEmitter(eventsHistory).emitAllowanceMintOpened(_swapID, _withdrawer, _secretLock);
+        return OK;
+    }
+
+    function mint(bytes32 _swapID, bytes _secretKey) 
+    onlyOpenSwaps(_swapID) 
+    onlyWithSecretKey(_swapID, _secretKey) 
+    external 
+    returns (uint _errorCode)
+    {
+        Swap memory swap = mintSwaps[_swapID];
+
+        _errorCode = _reissueAsset(swap.symbol, swap.value, swap.withdrawer);
+        if (_errorCode != OK) {
+            return _error(CHRONOBANK_PLATFORM_INVALID_INVOCATION);
+        }
+
+        // Close the swap.
+        mintSwaps[_swapID].secretKey = _secretKey;
+        mintSwapStates[_swapID] = States.CLOSED;
+
+        ChronoBankPlatformEmitter(eventsHistory).emitMinted(_swapID, _secretKey);
+        return OK; 
+    }
+
+    function expireMint(bytes32 _swapID) 
+    onlyOpenSwaps(_swapID) 
+    onlyExpirableSwaps(_swapID) 
+    external 
+    returns (uint)
+    {
+        // Expire the swap.
+        mintSwapStates[_swapID] = States.EXPIRED;
+
+        ChronoBankPlatformEmitter(eventsHistory).emitAllowanceMintExpired(_swapID);
+        return OK;
+    }
+
+    function checkMint(bytes32 _swapID) public view returns (
+        uint256 timelock, 
+        uint256 value, 
+        bytes32 symbol, 
+        address withdrawer, 
+        bytes32 secretLock
+    ) {
+        Swap memory swap = mintSwaps[_swapID];
+        return (swap.timelock, swap.value, swap.symbol, swap.withdrawer, swap.secretLock);
+    }
+
+    function checkMintSecretKey(bytes32 _swapID) public view onlyClosedSwaps(_swapID) returns (bytes secretKey) {
+        Swap memory swap = mintSwaps[_swapID];
+        return swap.secretKey;
+    }
+
     /// @notice Issues additional asset tokens if the asset have dynamic supply.
     ///
     /// Tokens issued with this call go straight to asset owner.
@@ -559,6 +715,10 @@ contract ChronoBankPlatform is Object, ChronoBankPlatformEmitter {
     ///
     /// @return success.
     function reissueAsset(bytes32 _symbol, uint _value) onlyOneOfOwners(_symbol) public returns (uint) {
+        return _reissueAsset(_symbol, _value, msg.sender);
+    }
+
+    function _reissueAsset(bytes32 _symbol, uint _value, address _destination) private returns (uint) {
         // Should have positive value.
         if (_value == 0) {
             return _error(CHRONOBANK_PLATFORM_INVALID_VALUE);
@@ -572,7 +732,7 @@ contract ChronoBankPlatform is Object, ChronoBankPlatformEmitter {
         if (asset.totalSupply + _value < asset.totalSupply) {
             return _error(CHRONOBANK_PLATFORM_SUPPLY_OVERFLOW);
         }
-        uint holderId = getHolderId(msg.sender);
+        uint holderId = getHolderId(_destination);
         asset.wallets[holderId].balance = asset.wallets[holderId].balance.add(_value);
         asset.totalSupply = asset.totalSupply.add(_value);
         // Internal Out Of Gas/Throw: revert this transaction too;

@@ -166,6 +166,9 @@ const errorsLibrary = {
     CHRONOBANK_PLATFORM_SHOULD_RECOVER_TO_NEW_ADDRESS: errorScope.chronobankplatform + 12,
     CHRONOBANK_PLATFORM_ASSET_IS_NOT_ISSUED: errorScope.chronobankplatform + 13,
     CHRONOBANK_PLATFORM_INVALID_INVOCATION: errorScope.chronobankplatform + 17,
+    CHRONOBANK_PLATFORM_INVALID_SWAP_STATE: errorScope.chronobankplatform + 18,
+    CHRONOBANK_PLATFORM_SWAP_EXPIRED: errorScope.chronobankplatform + 19,
+    CHRONOBANK_PLATFORM_INVALID_SECRET_KEY: errorScope.chronobankplatform + 20,
 
     PLATFORMS_ATTACHING_PLATFORM_ALREADY_EXISTS: errorScope.platforms + 1,
     PLATFORMS_PLATFORM_DOES_NOT_EXIST: errorScope.platforms + 2,

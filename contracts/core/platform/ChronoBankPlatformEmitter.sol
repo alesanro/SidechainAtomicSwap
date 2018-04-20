@@ -16,6 +16,10 @@ import "../event/MultiEventsHistoryAdapter.sol";
 /// All the functions is meant to be called using delegatecall.
 contract ChronoBankPlatformEmitter is MultiEventsHistoryAdapter {
 
+    event AllowanceMintOpened(bytes32 swapID, address withdrawer, bytes32 secretLock);
+    event AllowanceMintExpired(bytes32 swapID);
+    event Minted(bytes32 swapID, bytes secretKey);
+
     event Transfer(address indexed from, address indexed to, bytes32 indexed symbol, uint value, string reference);
     event Issue(bytes32 indexed symbol, uint value, address indexed by);
     event Revoke(bytes32 indexed symbol, uint value, address indexed by);
@@ -23,6 +27,18 @@ contract ChronoBankPlatformEmitter is MultiEventsHistoryAdapter {
     event Approve(address indexed from, address indexed spender, bytes32 indexed symbol, uint value);
     event Recovery(address indexed from, address indexed to, address by);
     event Error(uint errorCode);
+
+    function emitAllowanceMintOpened(bytes32 _swapID, address _withdrawer, bytes32 _secretLock) public {
+        emit AllowanceMintOpened(_swapID, _withdrawer, _secretLock);
+    }
+
+    function emitAllowanceMintExpired(bytes32 _swapID) public {
+        emit AllowanceMintExpired(_swapID);
+    }
+
+    function emitMinted(bytes32 _swapID, bytes _secretKey) public {
+        emit Minted(_swapID, _secretKey);
+    }
 
     function emitTransfer(address _from, address _to, bytes32 _symbol, uint _value, string _reference) public {
         emit Transfer(_from, _to, _symbol, _value, _reference);
